@@ -22,21 +22,20 @@ jobs:
         with:
           java-version: 17
 
-      - name: Set up Brave browser
+      - name: Set up Microsoft Edge
         run: |
-          sudo apt install apt-transport-https curl
-          sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
-          echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
-          sudo apt update
-          sudo apt install brave-browser
+          wget https://packages.microsoft.com/keys/microsoft.asc -O- | sudo apt-key add -
+          sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/edge stable main" > /etc/apt/sources.list.d/microsoft-edge-dev.list'
+          sudo apt-get update
+          sudo apt-get install -y microsoft-edge-stable
 
-      - name: Download BraveDriver
+      - name: Download EdgeDriver
         run: |
-          BRAVE_VERSION=$(brave-browser --version | grep -oP '\d+\.\d+\.\d+\.\d+')
-          wget -N https://chromedriver.storage.googleapis.com/$BRAVE_VERSION/chromedriver_linux64.zip
-          unzip chromedriver_linux64.zip
-          sudo mv chromedriver /usr/local/bin/
-          sudo chmod +x /usr/local/bin/chromedriver
+          EDGE_VERSION=$(microsoft-edge --version | grep -oP '\d+\.\d+\.\d+\.\d+')
+          wget -N https://msedgedriver.azureedge.net/$EDGE_VERSION/edgedriver_linux64.zip
+          unzip edgedriver_linux64.zip
+          sudo mv msedgedriver /usr/local/bin/
+          sudo chmod +x /usr/local/bin/msedgedriver
 
       - name: Set up Maven
         run: |
