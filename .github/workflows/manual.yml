@@ -22,19 +22,21 @@ jobs:
         with:
           java-version: 17
 
-      - name: Set up Opera
+      - name: Set up Brave browser
         run: |
-          sudo add-apt-repository 'deb https://deb.opera.com/opera-stable/ stable non-free'
-          wget -qO- https://deb.opera.com/archive.key | sudo apt-key add -
-          sudo apt-get update
-          sudo apt-get install -y opera-stable
+          sudo apt install apt-transport-https curl
+          sudo curl -fsSLo /usr/share/keyrings/brave-browser-archive-keyring.gpg https://brave-browser-apt-release.s3.brave.com/brave-browser-archive-keyring.gpg
+          echo "deb [signed-by=/usr/share/keyrings/brave-browser-archive-keyring.gpg] https://brave-browser-apt-release.s3.brave.com/ stable main" | sudo tee /etc/apt/sources.list.d/brave-browser-release.list
+          sudo apt update
+          sudo apt install brave-browser
 
-      - name: Download OperaDriver
+      - name: Download BraveDriver
         run: |
-          wget -N https://github.com/operasoftware/operachromiumdriver/releases/latest/download/operadriver_linux64.zip
-          unzip operadriver_linux64.zip
-          sudo mv operadriver_linux64/operadriver /usr/local/bin/
-          sudo chmod +x /usr/local/bin/operadriver
+          BRAVE_VERSION=$(brave-browser --version | grep -oP '\d+\.\d+\.\d+\.\d+')
+          wget -N https://chromedriver.storage.googleapis.com/$BRAVE_VERSION/chromedriver_linux64.zip
+          unzip chromedriver_linux64.zip
+          sudo mv chromedriver /usr/local/bin/
+          sudo chmod +x /usr/local/bin/chromedriver
 
       - name: Set up Maven
         run: |
