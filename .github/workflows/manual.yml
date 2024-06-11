@@ -2,7 +2,7 @@ name: SRP
 
 on:
   schedule:
-    - cron: '*/15 * * * *'
+    - cron: '*/11 * * * *'
 
 jobs:
   runtests:
@@ -22,20 +22,21 @@ jobs:
         with:
           java-version: 17
 
-      - name: Set up Microsoft Edge
+      - name: Set up Chrome
         run: |
-          wget https://packages.microsoft.com/keys/microsoft.asc -O- | sudo apt-key add -
-          sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/edge stable main" > /etc/apt/sources.list.d/microsoft-edge-dev.list'
           sudo apt-get update
-          sudo apt-get install -y microsoft-edge-stable
+          sudo apt-get install -y wget unzip
+          wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+          sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable
 
-      - name: Download EdgeDriver
+      - name: Download ChromeDriver
         run: |
-          EDGE_VERSION=$(microsoft-edge --version | grep -oP '\d+\.\d+\.\d+\.\d+')
-          wget -N https://msedgedriver.azureedge.net/$EDGE_VERSION/edgedriver_linux64.zip
-          unzip edgedriver_linux64.zip
-          sudo mv msedgedriver /usr/local/bin/
-          sudo chmod +x /usr/local/bin/msedgedriver
+          wget -N https://chromedriver.storage.googleapis.com/`curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE`/chromedriver_linux64.zip
+          unzip chromedriver_linux64.zip
+          sudo mv chromedriver /usr/local/bin/
+          sudo chmod +x /usr/local/bin/chromedriver
 
       - name: Set up Maven
         run: |
